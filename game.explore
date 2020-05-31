@@ -4,11 +4,13 @@
 #이스터에그가 많이 있음
 import pygame as py
 import sys,time
-from random import choice
-from pygame.locals import *
+import random
+import pygame.base
 import pickle
 import datetime as d
 import player_EX
+#-*- coding:utf-8 -*-
+
 #데이터 세이브 필요
 
 #초기
@@ -16,129 +18,128 @@ py.init()
 
 WIDTH=960
 HEIGHT=560
-
+SCREEN=py.display.set_mode([WIDTH,HEIGHT])
+py.display.set_caption('EXS,the island of traveling')
+fps=py.time.Clock()
+fps.tick(60)
+CLOCK=py.time.Clock()
+CLOCK.tick(60)
+    
+#colors
 BLACK=(0,0,0)
 WHITE=(255,255,255)
 GREY=(127,127,127)
 
-SCREEN=py.display.set_mode([WIDTH,HEIGHT])
-py.display.set_caption('EX,the island of traveling')
-    
-CLOCK=py.time.Clock()
-    
-CLOCK.tick(60)
-
+#variables
 hotel_passed=0
+store_passed=0
+money=5000
+move_y=0
 
-공격력=100
-방어력=10
-체력=100
-
-scene_1=py.image.load(r'\directory\illustrate\scene_1.png')
-menu=py.image.load(r'C:\directory\illustrate\store_menu.png')
-store=py.image.load(r'C:\directory\illustrate\store_menu.png')
-hp_potion=py.image.load(r'C:\directory\illustrate\hp_potent_energyberry_potion.png')
-route=py.image.load(r'C:\directory\illustrate\route.png')
+#images
+scene_1=py.image.load(r'C:\illustrateWls\scene_1.png')
+menu=py.image.load(r'C:\illustrateWls\store_menu.png')
+store=py.image.load(r'C:\illustrateWls\store_menu.png')
+hp_potion=py.image.load(r'C:\illustrateWls\hp_potent_energyberry_potion.png')
+route0=py.image.load(r'C:\illustrateWls\route_0.png')
+route1=py.image.load(r'C:\illustrateWls\route_1.png')
+stats=py.image.load(r'C:\illustrateWls\player_stats.png')
+player1=py.image.load(r'C:\illustrateWls\PYTHON-kindergarden.main_character.png')
 
 difficulty=''
 
-nanum=py.font.SysFont('nanummyeongjo',30)
+        
+            
 
 '''save={}
 save['local']=difficulty
 save['time']=d.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
 save['hotel']=hotel_passed'''
-'''class inventory:
-    def __init__(self):
-        self.item=[]
-        self.money=5000
-        
-    def pay(self,):
-        
-    def bag_arrange(self):
+''' class inventory:        
+        def bag_arrange(self):
         
     def change(self,item,function):'''
         
         
         
 #----------------------무기/방어구/hp도구----------------------------------------------------
-class w_shortknife:
-    def __init__(self):
-        self.damage=112
-        self.name='쿠크리 검'
-        #self.image=py.image.load(r'')
-        self.price=7800
-    def info(self):
-        information=[self.damage,self.name,'''self.image''']
-        return information
+class items:
+    class w_shortknife:
+        def __init__(self):
+            self.damage=112
+            self.name='쿠크리 검'
+            self.image=py.image.load(r'C:\illustrateWls\weapon-short knife.png')
+            self.price=7800
+        def info(self):
+            information=[self.damage,self.name,self.image]
+            return information
     
-class w_revolver:
-    def __init__(self):
-        self.damage=222
-        self.name='리볼버'
-        #self.image=py.image.load(r'')
-        self.price=22200
-    def info(self):
-        information=[self.damage,self.name,'''self.image''']
-        return information
+    class w_revolver:
+        def __init__(self):
+            self.damage=222
+            self.name='리볼버'
+            self.image=py.image.load(r'C:\illustrateWls\weapon-revolver.png')
+            self.price=22200
+        def info(self):
+            information=[self.damage,self.name,self.image]
+            return information
     
-class w_spear:
-    def __init__(self):
-        self.damage=61
-        self.name='창'
-        #self.image=py.image.load(r'')
-        self.price=3500
-    def info(self):
-        information=[self.damage,self.name,'''self.image''']
-        return information
+    class w_spear:
+        def __init__(self):
+            self.damage=61
+            self.name='창'
+            self.image=py.image.load(r'C:\illustrateWls\weapon-spear.png')
+            self.price=3500
+        def info(self):
+            information=[self.damage,self.name,self.image]
+            return information
     
-class w_bow:
-    def __init__(self):
-        self.damage=103
-        self.name='장궁'
-        #self.image=py.image.load(r'')
-        self.price=7000
-    def info(self):
-        information=[self.damage,self.name,'''self.image''']
-        return information
+    class w_bow:
+        def __init__(self):
+            self.damage=103
+            self.name='장궁'
+            self.image=py.image.load(r'C:\illustratWls\weapon-bow')
+            self.price=7000
+        def info(self):
+            information=[self.damage,self.name,self.image]
+            return information
+       
+    class w_sharpenbamboo:
+        def __init__(self):
+            self.damage=36
+            self.name='원콤죽창'
+            self.price=2300
+            self.image=py.image.load(r'C:\illustrateWls\weapon-sharpenbamboo')
+        def info(self):
+            information=[self.damage,self.name,self.image]
+            return information
     
-class w_sharpenbamboo:
-    def __init__(self):
-        self.damage=36
-        self.name='원콤죽창'
-        self.price=2300
-        #self.image=py.image.load(r'')
-    def info(self):
-        information=[self.damage,self.name,'''self.image''']
-        return information
+    class w_warriorsword:
+        def __init__(self):
+            self.damage=178
+            self.name='전사의 대검'
+            self.image=py.image.load(r'C:\illustrateWls\weapon-warriorsword')
+            self.price=17600
+        def info(self):
+            information=[self.damage,self.name,self.image]
+            return information
     
-class w_warriorsword:
-    def __init__(self):
-        self.damage=178
-        self.name='전사의 대검'
-        #self.image=py.image.load(r'')
-        self.price=17600
-    def info(self):
-        information=[self.damage,self.name,'''self.image''']
-        return information
+    class d_leather_set:
+        def __init(self):
+            self.block=90
+            self.name='가죽 옷'
+        def info(self):
+            information=[self.damage,self.name,self.image]
+            return information
     
-class d_leather_set:
-    def __init(self):
-        self.block=90
-        self.name='가죽 옷'
-        #self.image=py.image.load(r'')
-    def info(self):
-        information=[self.damage,self.name,'''self.image''']
-        return information
-    
-class d_breastarmor:
-    def __init(self):
-        self.block=164
-        self.name='강철 갑옷'
-        #self.image=py.image.load(r'')
-    def info(self):
-        information=[self.damage,self.name,'''self.image''']
-        return information
+    class d_breastarmor:
+        def __init(self):
+            self.block=164
+            self.name='강철 갑옷'
+            self.image=py.image.load(r'')
+        def info(self):
+            information=[self.damage,self.name,self.image]
+            return information
 class player:
     def __init__(self):
         self.attack=10#주먹으로 싸움(기본공격량)
@@ -146,7 +147,6 @@ class player:
         self.hp=50#사람 특성상 다른 동물보다 자연에 적합하지 않음(기본 체력)
         self.defence=''
         self.weapon=''
-        self.money=500
 
     def weapon_change(self,wpn,deal):
         #사용 할 무기는 사용 칸으로 옮김
@@ -167,86 +167,77 @@ class player:
         self.defend=protect#방어구의 방어 정도가 바뀜
         bag=inventory()#가방에서 화면 구성
         bag.change(self.defence,self.defend)
-
+    def info(self):
+        return [self.defend,self.attack,self.hp]
     def player_attack(self):
         return self.attack#attack=player(),a=attack.player_attack(),foe_defend(a)
     
     def player_defend(self,atk):
         self.hp-=atk
         return self.hp
-    def money(self,used):
-        self.money-=used
-        return self.money
+
         
 #-----------------그림 그리기---------------------------------------------------
-def image_load(SCREEN,img,loc):
-    SCREEN.blit(img,loc)
-    py.display.flip()
 def image_fix(SCREEN,img,loc,scale):
     rescale=py.transform.scale(img,scale)
     SCREEN.blit(rescale,loc)
-    py.display.flip()
+    py.display.update()
 
 #-----------------------------------------프린트-------------------------------------
 def SCREEN_print_b(SCREEN,text,loc,size,squ_size):
-    nanum=py.font.SysFont('nanummyeongjo',size) 
+    nanum=py.font.Font(r'C:\Users\200520\Documents\-윤디자인웹돋움.ttf',size) 
     sen=nanum.render(text,True,WHITE)
     location=sen.get_rect()
-    location.center = (loc)
+    location.center = (int(loc[0]),int(loc[1]))
     notice_image=py.draw.rect(SCREEN,BLACK,py.Rect(squ_size[0],squ_size[1],squ_size[2],squ_size[3]))
     SCREEN.blit(sen,location)
     py.display.flip()
 
 def SCREEN_print_c(SCREEN,text,loc,size,color):
     SCREEN.fill(color)
-    nanum=py.font.SysFont('nanummyeongjo',size) 
+    nanum=py.font.Font(r'C:\Users\200520\Documents\-윤디자인웹돋움.ttf',size) 
     sen=nanum.render(text,True,WHITE)
     location=sen.get_rect()
-    location.center = (loc)
+    location.center = (int(loc[0]),int(loc[1]))
     SCREEN.blit(sen,location)
     py.display.flip()
 
-def SCREEN_print(SCREEN,text,loc,size):
-    nanum=py.font.SysFont('nanummyeongjo',size) 
-    sen=nanum.render(text,True,WHITE)
+def SCREEN_print(SCREEN,text,loc,size,color):
+    nanum=py.font.Font(r'C:\Users\200520\Documents\-윤디자인웹돋움.ttf',size) 
+    sen=nanum.render(text,True,color)
     location=sen.get_rect()
-    location.center = (loc)
+    location.center = (int(loc[0]),int(loc[1]))
     SCREEN.blit(sen,location)
     py.display.flip()
 #--------------------------------------------------------------------------------------
 #--------------------------------상점--------------------------------------------------
 def store_visit():
-    image_load(screen,original,(0,0),(960,560))
-    image_load(screen,hp_potion,(39,169),(189,222))#39,267,496,729
-    image_load(screen,hp_potion,(267,169),(189,222))
-    image_load(screen,hp_potion,(496,169),(189,222))
-    image_load(screen,hp_potion,(729,169),(189,222))
-    SCREEN_print_b(SCREEN,"어서오세요! 무엇을 사실 건가요?",(240,HEIGHT/2+165),20,(0,415,WIDTH,225))
-#---------------------------------지역 난이도 로드-------------------------------------
-class difficulty:
-
-    def __init__(self):
-        self.difficulty=''
-
-    def localeasy(self):
-        self.difficulty='easy'
-        return self.difficulty
+    image_fix(SCREEN,route_store,(0,0),(960,560))
+    SCREEN_print_b(SCREEN,'상점을 좀 둘러볼까?',(WIDTH/2,HEIGHT/2+235),20,(0,415,WIDTH,225))
+    res=ask((WIDTH/2-240,HEIGHT/2+235),(WIDTH/2-220,HEIGHT/2+235))
+    if res=='y':
+        item=item
+        image_fix(screen,store,(0,0),(960,560))
+        image_fix(screen,hp_potion,(39,169),(189,222))#39,267,496,729
+        image_fix(screen,hp_potion,(267,169),(189,222))
+        image_fix(screen,hp_potion,(496,169),(189,222))
+        image_fix(screen,hp_potion,(729,169),(189,222))
+        SCREEN_print_b(SCREEN,"어서오세요! 무엇을 사실 건가요?",(240,HEIGHT/2+165),20,(0,415,WIDTH,225))
         
-    def localmedium(self):
-        self.difficulty='medium'
-        return self.difficulty
-       
-    def localhard(self):
-        self.difficulty='difficult'
-        return self.difficulty
-#--------------------------------------------------------------------------------------
+        '''if == :
+               break'''     
+
+    if res=='n':
+        SCREEN.print_b(SCREEN,'갈 길이 멀다.그냥 가자',(WIDTH/2,HEIGHT/2+235),15,WHITE)
+        time.sleep(2)
+        SCREEN.fill(BLACK)
+        time.sleep(1)
+        return
+
 def hotel_appeared():
-    global WIDTH,HEIGHT
-    screen.print_b(SCREEN,'쉬고 갈까?'(WIDTH/2,HEIGHT/2+235),20,(0,415,WIDTH,225))
-    SCREEN.fill(BLACK)
-    SCREEN_print_b(SCREEN,'여관이 있다.쉬고 갈까?',(WIDTH/2,HEIGHT/2+235),20,(0,415,WIDTH,225))
+    image_fix(SCREEN,route_store,(0,0),(960,560))
+    SCREEN_print_b(SCREEN,'여관이 있다.쉬고 갈까?  네(y) 아니오(n)',(WIDTH/2,HEIGHT/2+235),20,(0,415,WIDTH,225))
     res=ask((WIDTH/2+70,HEIGHT/2+235),(WIDTH/2+70,HEIGHT/2+235))
-    SCREEN_fill(BLACK)
     for event in py.event.get():
         recent_hp=hp
         if event.type==py.K_y:
@@ -256,9 +247,11 @@ def hotel_appeared():
             alarm='개운하다!{}만큼 회복했다.'.format(full_hp-recent_hp)
             SCREEN.print_b(SCREEN,alarm,(WIDTH/2,HEIGHT/2+235),(WIDTH/2,HEIGHT/2+165),20,(0,415,WIDTH,225))
         if event.type==py.K_n():
-            SCREEN.print_b(SCREEN,'갈 길이 멀다.그냥 가자',(WIDTH/2,HEIGHT/2+235),15,WHITE)
+            SCREEN.print_b(SCREEN,'여기 들릴 바엔 차라리 뜨끈한 유물 하나라도 더 얻는게 낫지.그냥 가자',(WIDTH/2,HEIGHT/2+235),15,WHITE)
+            time.sleep(2)
             SCREEN.fill(BLACK)
             time.sleep(1)
+#--------------------------------------------------------------------------------------
 def wait():
     key=py.key.get_pressed()
     while True:
@@ -270,9 +263,9 @@ def wait():
                 py.quit()
                 sys.exit()
 
-def ask(loc,loc1):
-    SCREEN_print(SCREEN,"네(y)",loc,30)
-    SCREEN_print(SCREEN,"아니요(n)",loc1,30)
+def ask(loc,loc1,size,color):
+    SCREEN_print(SCREEN,"네(y)",loc,size,color)
+    SCREEN_print(SCREEN,"아니요(n)",loc1,size,color)
     while True:
         for event in py.event.get():
             if event.type==py.KEYDOWN:
@@ -280,18 +273,57 @@ def ask(loc,loc1):
                     return 'y'
                 elif event.key==py.K_n:
                     return 'n'
-def route_inf():
-    image_load(route)
-    #while True:
     
+
+
         
+                    #if chance=='store':
+                        #store_appeared()
+
+
+                    #if chance=='hotel':
+                        #hotel_appeared()
+def stopped():
+    while True:
+        route0_positionx=-140
+        route0_positiony=0
+        route1_positionx=-140
+        route1_positiony=-560
+        pr=''
+        image_fix(SCREEN,route0,(route0_positionx,route0_positiony),(1560,560))
+        image_fix(SCREEN,route1,(route1_positionx,route1_positiony),(1560,560))
+        for event in py.event.get():
+            if event.type==py.KEYDOWN and pr !=event.key:
+                if event.key==py.K_w:
+                    for i in range(140):
+                        route0_positionx-=1.64
+                        route0_positiony+=4
+                        route1_positionx-=1.64
+                        route1_positiony+=4
+                        image_fix(SCREEN,route0,(route0_positionx,route0_positiony),(1560,560))
+                        time.sleep(0.002)
+                        image_fix(SCREEN,route1,(route1_positionx,route1_positiony),(1560,560))
+                        time.sleep(0.002)
+                        pr=event.key
+                        
 def easy_region():
-    image_fix(SCREEN,route,(0,0),(960,560))
-    SCREEN_print_b(SCREEN,"자, 이곳을 한 번 탐사해보자. 무언사 가치있는게 나올지도 몰라",(240,HEIGHT/2+165),20,(0,415,WIDTH,225))
+    difficulty='쉬움'
+    p=player()
+    stat=p.info()
+    SCREEN_print_b(SCREEN,"자, 이곳을 한 번 탐사해보자. 무언사 가치있는게 나올지도 몰라",(WIDTH/2-240,HEIGHT/2+165),20,(0,415,WIDTH,225))
+    wait()
+    stopped()
     
-def info():
+        #pick=['store','go','go','go','go','go','go','go','go','hotel']
+        #chosed=random.choice(pick)      
+    SCREEN.fill(BLACK)
+    time.sleep(1)
+    
+
+    
+def tutorial():
     SCREEN_print_c(SCREEN,"로딩 중......",(WIDTH/2,HEIGHT/2),30,BLACK)
-    SCREEN_print(SCREEN,' <스페이스 키>를 눌러 진행하십시요',(WIDTH/2,HEIGHT/2+75),20)
+    SCREEN_print(SCREEN,' 다음 잠면으로 넘어가려면 <스페이스 키>를 누르세요',(WIDTH/2,HEIGHT/2+75),20,WHITE)
     time.sleep(3)
     SCREEN_print_c(SCREEN,"탐험가여,만나서 반가워요",(WIDTH/2,HEIGHT/2),30,GREY)
     wait()
@@ -300,7 +332,7 @@ def info():
     SCREEN_print_c(SCREEN,"당신을 돕기 위해 왔죠.",(WIDTH/2,HEIGHT/2),30,GREY)
     wait()
     SCREEN_print_c(SCREEN,"시작에 앞서,가이드를 보시겠습니까?",(WIDTH/2,HEIGHT/2),30,GREY)
-    res=ask((WIDTH/2-84,HEIGHT/2+50),(WIDTH/2+84,HEIGHT/2+50))
+    res=ask((WIDTH/2-84,HEIGHT/2+50),(WIDTH/2+84,HEIGHT/2+50),30)
     if res=='y':
         while True:
             SCREEN_print_c(SCREEN,"알겠습니다",(WIDTH/2,HEIGHT/2),30,GREY)
@@ -312,18 +344,18 @@ def info():
             wait()
             SCREEN_print_c(SCREEN,"사진 a",(WIDTH/2,HEIGHT/2),30,GREY)
             SCREEN_print_b(SCREEN,"이곳은 그 어느 곳보다 자연이 잘 보존되어있죠.",(WIDTH/2,HEIGHT/2+205),30,(0,450,WIDTH,225))
-            SCREEN_print(SCREEN,"이곳만큼이나 주민들도 친절합니다.",(WIDTH/2,HEIGHT/2+240),30)
+            SCREEN_print(SCREEN,"이곳만큼이나 주민들도 친절합니다.",(WIDTH/2,HEIGHT/2+240),30,WHITE)
             wait()
             SCREEN_print_c(SCREEN,"사진 b",(WIDTH/2,HEIGHT/2),30,GREY)
             SCREEN_print_b(SCREEN,"탐험하기에 앞서,탐험에 도움이 될 것들을 알아 놓으셔야 합니다.",(WIDTH/2,HEIGHT/2+220),30,(0,450,WIDTH,225))
             wait()
             SCREEN_print_c(SCREEN,"사진 a.",(WIDTH/2,HEIGHT/2),30,GREY)
             SCREEN_print_b(SCREEN,"앞으로 전진할 때는 화살표 위쪽키를 누르십시요.",(WIDTH/2,HEIGHT/2+205),30,(0,450,WIDTH,225))
-            SCREEN_print(SCREEN,"유저가 적을 발견하거나,보물을 발견합니다",(WIDTH/2,HEIGHT/2+240),30)
+            SCREEN_print(SCREEN,"유저가 적을 발견하거나,보물을 발견합니다",(WIDTH/2,HEIGHT/2+240),30,WHITE)
             wait()
             SCREEN_print_c(SCREEN,"사진 c.",(WIDTH/2,HEIGHT/2),30,GREY)
             SCREEN_print_b(SCREEN,"플레이어의 스텟은 ",(WIDTH/2,HEIGHT/2+205),30,(0,450,WIDTH,225))
-            SCREEN_print(SCREEN,"[공격력,방어력,체력]등이 있습니다",(WIDTH/2,HEIGHT/2+240),30)
+            SCREEN_print(SCREEN,"[공격력,방어력,체력]등이 있습니다",(WIDTH/2,HEIGHT/2+240),30,WHITE)
             wait()
             SCREEN_print_c(SCREEN,"사진 d.",(WIDTH/2,HEIGHT/2),30,GREY)
             SCREEN_print_b(SCREEN,"공격력은 공격의 피해량을 나타내며,",(WIDTH/2,HEIGHT/2+205),30,(0,450,WIDTH,225))
@@ -331,37 +363,37 @@ def info():
             wait()
             SCREEN_print_c(SCREEN,"사진 e.",(WIDTH/2,HEIGHT/2),30,GREY)
             SCREEN_print_b(SCREEN,"방어력은 적의 데미지를 반감시키며,",(WIDTH/2,HEIGHT/2+205),30,(0,450,WIDTH,225))
-            SCREEN_print(SCREEN,"방어구 교체로 더 증가시킬 수 있습니다",(WIDTH/2,HEIGHT/2+240),30)
+            SCREEN_print(SCREEN,"방어구 교체로 더 증가시킬 수 있습니다",(WIDTH/2,HEIGHT/2+240),30,WHITE)
             wait()
             SCREEN_print_c(SCREEN,"사진 f.",(WIDTH/2,HEIGHT/2),30,GREY)
             SCREEN_print_b(SCREEN,"마지막,체력은 가장 중요한 요소로,0이 될 시에 들렀던",(WIDTH/2,HEIGHT/2+205),30,(0,450,WIDTH,225))
-            SCREEN_print(SCREEN,"여관이나 시작 지역으로 이동합니다.",(WIDTH/2,HEIGHT/2+240),30)
+            SCREEN_print(SCREEN,"여관이나 시작 지역으로 이동합니다.",(WIDTH/2,HEIGHT/2+240),30,WHITE)
             wait()
             SCREEN_print_c(SCREEN,"사진 g.",(WIDTH/2,HEIGHT/2),30,GREY)
             SCREEN_print_b(SCREEN,"식용 아이템으로 체력을 회복하거나,",(WIDTH/2,HEIGHT/2+205),30,(0,450,WIDTH,225))
-            SCREEN_print(SCREEN,"침대로 체력을 회복할 수 있습니다",(WIDTH/2,HEIGHT/2+240),30)
+            SCREEN_print(SCREEN,"침대로 체력을 회복할 수 있습니다",(WIDTH/2,HEIGHT/2+240),30,WHITE)
             wait()
             SCREEN_print_c(SCREEN,"사진 h.",(WIDTH/2,HEIGHT/2),30,GREY)
             SCREEN_print_b(SCREEN,"탐험을 하면서 알 수 없는 것들을 발견할 때가 많습니다.",(WIDTH/2,HEIGHT/2+205),30,(0,450,WIDTH,225))
-            SCREEN_print(SCREEN,"g키를 눌러 주우십시요.도움이 될 겁니다",(WIDTH/2,HEIGHT/2+240),30)
+            SCREEN_print(SCREEN,"g키를 눌러 주우십시요.도움이 될 겁니다",(WIDTH/2,HEIGHT/2+240),30,WHITE)
             wait()
             SCREEN_print_c(SCREEN,"사진 i.",(WIDTH/2,HEIGHT/2),30,GREY)
             SCREEN_print_b(SCREEN,"적이 나타나면,도망가거나 싸우십시요.",(WIDTH/2,HEIGHT/2+205),30,(0,450,WIDTH,225))
-            SCREEN_print(SCREEN,"적들은 가끔씩 좋은 아이템을 줄때도 있답니다",(WIDTH/2,HEIGHT/2+240),30)
+            SCREEN_print(SCREEN,"적들은 가끔씩 좋은 아이템을 줄때도 있답니다",(WIDTH/2,HEIGHT/2+240),30,WHITE)
             wait()
             SCREEN_print_c(SCREEN,"사진 j.",(WIDTH/2,HEIGHT/2),30,GREY)
             SCREEN_print_b(SCREEN,"익스는 3개 지역이 있고,지역에 따라 난이도가 다릅니다.",(WIDTH/2,HEIGHT/2+205),30,(0,450,WIDTH,225))
-            SCREEN_print(SCREEN,"난이도가 어려울수록 더 좋은 아이템을 볼 수 있죠.",(WIDTH/2,HEIGHT/2+240),30)
+            SCREEN_print(SCREEN,"난이도가 어려울수록 더 좋은 아이템을 볼 수 있죠.",(WIDTH/2,HEIGHT/2+240),30,WHITE)
             wait()
             SCREEN_print_c(SCREEN,"사진 k.",(WIDTH/2,HEIGHT/2),30,GREY)
             SCREEN_print_b(SCREEN,"마을엔 여관과 상점이 있으며,치료하거나 물건을 살 수 있습니다",(WIDTH/2,HEIGHT/2+220),30,(0,450,WIDTH,225))
             wait()
             SCREEN_print_c(SCREEN,"사진 h.",(WIDTH/2,HEIGHT/2),30,GREY)
             SCREEN_print_b(SCREEN,"유물을 찾으러 모험을 떠나세요.",(WIDTH/2,HEIGHT/2+205),30,(0,450,WIDTH,225))
-            SCREEN_print(SCREEN,"유물은 탐험하면서 어느 위치에서 얻을 수 있습니다.",(WIDTH/2,HEIGHT/2+240),30)
+            SCREEN_print(SCREEN,"유물은 탐험하면서 어느 위치에서 얻을 수 있습니다.",(WIDTH/2,HEIGHT/2+240),30,WHITE)
             wait()
             SCREEN_print_c(SCREEN,"내용을 이해하셨나요?",(WIDTH/2,HEIGHT/2),30,BLACK)
-            res_in=ask((WIDTH/2+90,HEIGHT/2+65),(WIDTH/2-90,HEIGHT/2+65))
+            res_in=ask((WIDTH/2-90,HEIGHT/2+65),(WIDTH/2+90,HEIGHT/2+65),30,WHITE)
             if res_in=='y':
                 res='n'
                 break
@@ -373,15 +405,15 @@ def info():
             wait()
             SCREEN_print_c(SCREEN,"이제,머나먼 미지의 세계로 항해를 하러 갈까요?",(WIDTH/2,HEIGHT/2),30,GREY)
             wait()
-            py.display.update()
             game_beginning()
-
+                    
 def game_beginning():
     SCREEN.fill(BLACK)
+    py.display.update()
     time.sleep(3)
     move_x=0
-    while move_x!=-500:
-        image_load(SCREEN,scene_1,(move_x,0))
+    while move_x!=-280:
+        image_fix(SCREEN,scene_1,(move_x,0),(1440,840))
         time.sleep(0.002)
         move_x-=1
     SCREEN_print_b(SCREEN,"탐험일지 152번,난 그 비밀의 섬을 발견했다.",(WIDTH/2,HEIGHT/2+165),20,(0,415,WIDTH,225))
@@ -389,26 +421,12 @@ def game_beginning():
     SCREEN_print_b(SCREEN,"아마 이 섬에 남은 권력자들의 유물이 있을 것이다.",(WIDTH/2,HEIGHT/2+165),20,(0,415,WIDTH,225))
     wait()
     SCREEN_print_b(SCREEN,"이곳에서 무슨 일이 있을지는 모르지만,",(WIDTH/2,HEIGHT/2+165),20,(0,415,WIDTH,225))
-    SCREEN_print(SCREEN,"주변에 도움이 될 만한 것들이 많다하니 너무 걱정은 하지 말자고.",(WIDTH/2,HEIGHT/2+190),20)
+    SCREEN_print(SCREEN,"주변에 도움이 될 만한 것들이 많다하니 너무 걱정은 하지 말자고.",(WIDTH/2,HEIGHT/2+190),20,WHITE)
     wait()
     easy_region()
-                
-SCREEN.fill(BLACK)
-py.display.flip()
 
-#def game_start(screen):'''
-
-running=True
-while running:
-    info()
-    
-
-    
-           
-#player_info={"이름":player_name,"hp":100,"공격력":10}
-
-#if __name__==__main__:
-    
+while True:
+    easy_region()
     
 py.quit()
 sys.exit()
